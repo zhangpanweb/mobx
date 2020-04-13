@@ -3,5 +3,9 @@
     "semi": false,
     "tabWidth": 4,
     "singleQuote": false,
-    "useTabs": false
+    "useTabs": false,
+    "trailingComma": "none",
+    "arrowParens": "avoid",
+    "bracketSpacing": true,
+    ""
 }
