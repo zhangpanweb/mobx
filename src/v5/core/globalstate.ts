@@ -165,7 +165,7 @@ export function getGlobal() {
 let canMergeGlobalState = true
 let isolateCalled = false
 
-export let globalState: MobXGlobals = (function() {
+export let globalState: MobXGlobals = (function () {
     const global = getGlobal()
 
     if (global.__mobxInstanceCount > 0 && !global.__mobxGlobals) canMergeGlobalState = false

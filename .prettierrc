@@ -5,7 +5,5 @@
     "singleQuote": false,
     "useTabs": false,
     "trailingComma": "none",
-    "arrowParens": "avoid",
-    "bracketSpacing": true,
-    ""
+    "arrowParens": "avoid"
 }

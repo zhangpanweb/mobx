@@ -5,7 +5,7 @@ const set = mobx.observable.set
 const autorun = mobx.autorun
 const iterall = require("iterall")
 
-test("set crud", function() {
+test("set crud", function () {
     const events = []
     const s = set([1])
 
@@ -23,7 +23,10 @@ test("set crud", function() {
     expect(s.size).toBe(2)
     expect(mobx.keys(s)).toEqual([1, "2"])
     expect(mobx.values(s)).toEqual([1, "2"])
-    expect(mobx.entries(s)).toEqual([[1, 1], ["2", "2"]])
+    expect(mobx.entries(s)).toEqual([
+        [1, 1],
+        ["2", "2"]
+    ])
     expect(Array.from(s)).toEqual([1, "2"])
     expect(s.toJS()).toEqual(new Set([1, "2"]))
     expect(s.toString()).toBe("ObservableSet@1[ 1, 2 ]")
@@ -77,15 +80,15 @@ test("set crud", function() {
     ])
 })
 
-test("observe value", function() {
+test("observe value", function () {
     const s = set()
     let hasX = false
     let hasY = false
 
-    autorun(function() {
+    autorun(function () {
         hasX = s.has("x")
     })
-    autorun(function() {
+    autorun(function () {
         hasY = s.has("y")
     })
 
@@ -103,17 +106,17 @@ test("observe value", function() {
     expect(mobx.values(s)).toEqual(["y"])
 })
 
-test("observe collections", function() {
+test("observe collections", function () {
     const x = set()
     let keys, values, entries
 
-    autorun(function() {
+    autorun(function () {
         keys = mobx.keys(x)
     })
-    autorun(function() {
+    autorun(function () {
         values = Array.from(x.values())
     })
-    autorun(function() {
+    autorun(function () {
         entries = Array.from(x.entries())
     })
 
@@ -138,7 +141,10 @@ test("observe collections", function() {
     x.add("b")
     expect(keys).toEqual(["a", "b"])
     expect(values).toEqual(["a", "b"])
-    expect(entries).toEqual([["a", "a"], ["b", "b"]])
+    expect(entries).toEqual([
+        ["a", "a"],
+        ["b", "b"]
+    ])
 
     x.delete("a")
     expect(keys).toEqual(["b"])
@@ -156,12 +162,12 @@ test("set modifier", () => {
     expect(mobx.isObservableSet(y.a)).toBe(true)
 })
 
-test("cleanup", function() {
+test("cleanup", function () {
     const s = set(["a"])
 
     let hasA
 
-    autorun(function() {
+    autorun(function () {
         hasA = s.has("a")
     })
 
@@ -188,7 +194,10 @@ test("set should support iterall / iterable ", () => {
 
     expect(leech(iterall.getIterator(a))).toEqual([1, 2])
 
-    expect(leech(a.entries())).toEqual([[1, 1], [2, 2]])
+    expect(leech(a.entries())).toEqual([
+        [1, 1],
+        [2, 2]
+    ])
 
     expect(leech(a.keys())).toEqual([1, 2])
     expect(leech(a.values())).toEqual([1, 2])

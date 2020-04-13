@@ -26,7 +26,7 @@ export function createAction(actionName: string, fn: Function, ref?: Object): Fu
         if (typeof actionName !== "string" || !actionName)
             fail(`actions should have valid names, got: '${actionName}'`)
     }
-    const res = function() {
+    const res = function () {
         return executeAction(actionName, fn, ref || this, arguments)
     }
     ;(res as any).isMobxAction = true

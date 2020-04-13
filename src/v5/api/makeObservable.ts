@@ -69,9 +69,10 @@ export function makeProperty(
     }
     if (!annotation || annotation === true || !annotation.annotationType) {
         return fail(
-            // @ts-ignore
-            `invalid decorator '${annotation?.annotationType ??
-                annotation}' for '${key.toString()}'`
+            `invalid decorator '${
+                // @ts-ignore
+                annotation?.annotationType ?? annotation
+            }' for '${key.toString()}'`
         )
     }
     switch (annotation.annotationType) {
@@ -135,8 +136,9 @@ export function makeProperty(
         }
         default:
             fail(
-                `invalid decorator '${annotation.annotationType ??
-                    annotation}' for '${key.toString()}'`
+                `invalid decorator '${
+                    annotation.annotationType ?? annotation
+                }' for '${key.toString()}'`
             )
     }
 }

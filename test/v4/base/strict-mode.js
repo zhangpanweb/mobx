@@ -148,7 +148,7 @@ test("can create objects in strict mode with action", () => {
     mobx.action(() => {
         mobx.observable({
             a: 2,
-            b: function() {
+            b: function () {
                 return this.a
             }
         })
@@ -167,20 +167,20 @@ test("can create objects in strict mode with action", () => {
     mobx.configure({ enforceActions: "never" })
 })
 
-test("strict mode checks", function() {
+test("strict mode checks", function () {
     const x = mobx.observable.box(3)
     const d = mobx.autorun(() => x.get())
 
-    mobx._allowStateChanges(false, function() {
+    mobx._allowStateChanges(false, function () {
         x.get()
     })
 
-    mobx._allowStateChanges(true, function() {
+    mobx._allowStateChanges(true, function () {
         x.set(7)
     })
 
-    expect(function() {
-        mobx._allowStateChanges(false, function() {
+    expect(function () {
+        mobx._allowStateChanges(false, function () {
             x.set(4)
         })
     }).toThrowError(/Side effects like changing state are not allowed at this point/)
@@ -227,7 +227,7 @@ test("enforceActions 'strict' should not throw exception while observable array 
     }
 })
 
-test("warn on unsafe reads of computed", function() {
+test("warn on unsafe reads of computed", function () {
     try {
         mobx.configure({ computedRequiresReaction: true })
         const x = mobx.observable({
@@ -244,8 +244,8 @@ test("warn on unsafe reads of computed", function() {
     }
 })
 
-describe("observableRequiresReaction", function() {
-    test("warn on unsafe reads of observable", function() {
+describe("observableRequiresReaction", function () {
+    test("warn on unsafe reads of observable", function () {
         try {
             mobx.configure({ observableRequiresReaction: true })
             const x = mobx.observable({
@@ -259,7 +259,7 @@ describe("observableRequiresReaction", function() {
         }
     })
 
-    test("warn on unsafe reads of observable also when there are other subscriptions", function() {
+    test("warn on unsafe reads of observable also when there are other subscriptions", function () {
         try {
             mobx.configure({ observableRequiresReaction: true })
             const x = mobx.observable({
@@ -278,7 +278,7 @@ describe("observableRequiresReaction", function() {
         }
     })
 
-    test("warn on unsafe reads of observable array", function() {
+    test("warn on unsafe reads of observable array", function () {
         try {
             mobx.configure({ observableRequiresReaction: true })
             const x = mobx.observable({
@@ -291,7 +291,7 @@ describe("observableRequiresReaction", function() {
             mobx.configure({ observableRequiresReaction: false })
         }
     })
-    test("don't warn on reads inside a computed", function() {
+    test("don't warn on reads inside a computed", function () {
         try {
             mobx.configure({ observableRequiresReaction: true })
             const x = mobx.observable({
@@ -311,7 +311,7 @@ describe("observableRequiresReaction", function() {
         }
     })
 
-    test("don't warn on autorun tracks invalidation of unbound dependencies", function() {
+    test("don't warn on autorun tracks invalidation of unbound dependencies", function () {
         // #2195
         try {
             mobx.configure({ observableRequiresReaction: true })
@@ -335,7 +335,7 @@ describe("observableRequiresReaction", function() {
         }
     })
 
-    test("don't warn on autorun tracks invalidation of unbound dependencies - also with action", function() {
+    test("don't warn on autorun tracks invalidation of unbound dependencies - also with action", function () {
         // #2195
         try {
             mobx.configure({ observableRequiresReaction: true })
@@ -361,7 +361,7 @@ describe("observableRequiresReaction", function() {
         }
     })
 
-    test("don't warn on reads inside an action", function() {
+    test("don't warn on reads inside an action", function () {
         try {
             mobx.configure({ observableRequiresReaction: true })
             const x = mobx.observable({
@@ -380,7 +380,7 @@ describe("observableRequiresReaction", function() {
         }
     })
 
-    test("warn on reads inside a transaction", function() {
+    test("warn on reads inside a transaction", function () {
         try {
             mobx.configure({ observableRequiresReaction: true })
             const x = mobx.observable({
@@ -396,8 +396,8 @@ describe("observableRequiresReaction", function() {
     })
 })
 
-describe("reactionRequiresObservable", function() {
-    test("warn on reaction creation without dependencies", function() {
+describe("reactionRequiresObservable", function () {
+    test("warn on reaction creation without dependencies", function () {
         try {
             mobx.configure({ reactionRequiresObservable: true })
 
@@ -415,7 +415,7 @@ describe("reactionRequiresObservable", function() {
     })
 })
 
-test("#1869", function() {
+test("#1869", function () {
     const x = mobx.observable.box(3)
     mobx.configure({ enforceActions: "always", isolateGlobalState: true })
     expect(() => {

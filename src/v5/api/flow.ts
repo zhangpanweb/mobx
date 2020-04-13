@@ -21,17 +21,18 @@ export function flow<R, Args extends any[]>(
     const name = generator.name || "<unnamed flow>"
 
     // Implementation based on https://github.com/tj/co/blob/master/index.js
-    return function() {
+    return function () {
         const ctx = this
         const args = arguments
         const runId = ++generatorId
-        const gen = action(`${name} - runid: ${runId} - init`, generator as (
-            ...args: Args
-        ) => Generator<any, R, any>).apply(ctx, (args as any) as Args)
+        const gen = action(
+            `${name} - runid: ${runId} - init`,
+            generator as (...args: Args) => Generator<any, R, any>
+        ).apply(ctx, (args as any) as Args)
         let rejector: (error: any) => void
         let pendingPromise: CancellablePromise<any> | undefined = undefined
 
-        const promise = new Promise<R>(function(resolve, reject) {
+        const promise = new Promise<R>(function (resolve, reject) {
             let stepId = 0
             rejector = reject
 
@@ -78,7 +79,7 @@ export function flow<R, Args extends any[]>(
             onFulfilled(undefined) // kick off the process
         }) as any
 
-        promise.cancel = action(`${name} - runid: ${runId} - cancel`, function() {
+        promise.cancel = action(`${name} - runid: ${runId} - cancel`, function () {
             try {
                 if (pendingPromise) cancelPromise(pendingPromise)
                 // Finally block can return (or yield) stuff..

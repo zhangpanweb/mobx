@@ -1,6 +1,6 @@
 import { observable, observe, computed } from "../../../src/v4/mobx"
 
-test("observe object and map properties", function() {
+test("observe object and map properties", function () {
     const map = observable.map({ a: 1 })
     const events: any[] = []
 

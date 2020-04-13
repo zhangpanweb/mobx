@@ -63,7 +63,7 @@ function interceptHook(hook: "onBecomeObserved" | "onBecomeUnobserved", thing, a
     if (typeof orig !== "function")
         return fail(process.env.NODE_ENV !== "production" && "Not an atom that can be (un)observed")
 
-    return function() {
+    return function () {
         const hookListeners = atom[listenersKey]
         if (hookListeners) {
             hookListeners.delete(cb)

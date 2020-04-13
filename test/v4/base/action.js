@@ -15,7 +15,7 @@ test("action should wrap in transaction", () => {
     })
 
     expect(mobx.isAction(increment)).toBe(true)
-    expect(mobx.isAction(function() {})).toBe(false)
+    expect(mobx.isAction(function () {})).toBe(false)
 
     increment(7)
 
@@ -239,7 +239,7 @@ test("action in autorun should be untracked", () => {
 test("action should not be converted to computed when using (extend)observable", () => {
     const a = mobx.observable({
         a: 1,
-        b: mobx.action(function() {
+        b: mobx.action(function () {
             this.a++
         })
     })
@@ -249,7 +249,7 @@ test("action should not be converted to computed when using (extend)observable",
     expect(a.a).toBe(2)
 
     mobx.extendObservable(a, {
-        c: mobx.action(function() {
+        c: mobx.action(function () {
             this.a *= 3
         })
     })
@@ -264,7 +264,7 @@ test("#286 exceptions in actions should not affect global state", () => {
     function Todos() {
         mobx.extendObservable(this, {
             count: 0,
-            add: mobx.action(function() {
+            add: mobx.action(function () {
                 this.count++
                 if (this.count === 2) {
                     throw new Error("An Action Error!")
@@ -352,7 +352,7 @@ test("action in autorun does not keep / make computed values alive", () => {
     callComputedTwice()
     expect(calls).toBe(5)
 
-    runWithMemoizing(function() {
+    runWithMemoizing(function () {
         mobx.runInAction(callComputedTwice)
     })
     expect(calls).toBe(6)
@@ -441,7 +441,7 @@ test("bound actions bind", () => {
     const x = mobx.observable(
         {
             y: 0,
-            z: function(v) {
+            z: function (v) {
                 this.y += v
                 this.y += v
             },

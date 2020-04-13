@@ -54,7 +54,7 @@ export function deprecated(msg: string, thing?: string): boolean {
  */
 export function once(func: Lambda): Lambda {
     let invoked = false
-    return function() {
+    return function () {
         if (invoked) return
         invoked = true
         return (func as any).apply(this, arguments)
@@ -139,7 +139,7 @@ export function createInstanceofPredicate<T>(
 ): (x: any) => x is T {
     const propName = "isMobX" + name
     clazz.prototype[propName] = true
-    return function(x) {
+    return function (x) {
         return isObject(x) && x[propName] === true
     } as any
 }

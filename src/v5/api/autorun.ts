@@ -50,7 +50,7 @@ export function autorun(
         // normal autorun
         reaction = new Reaction(
             name,
-            function(this: Reaction) {
+            function (this: Reaction) {
                 this.track(reactionRunner)
             },
             opts.onError,
@@ -161,7 +161,7 @@ export function reaction<T>(
 }
 
 function wrapErrorHandler(errorHandler, baseFn) {
-    return function() {
+    return function () {
         try {
             return baseFn.apply(this, arguments)
         } catch (e) {

@@ -6,12 +6,12 @@ const autorun = mobx.autorun
 const iterall = require("iterall")
 const { makeObservable } = mobx
 
-test("map crud", function() {
+test("map crud", function () {
     mobx._getGlobalState().mobxGuid = 0 // hmm dangerous reset?
 
     const events = []
     const m = map({ "1": "a" })
-    m.observe(function(changes) {
+    m.observe(function (changes) {
         events.push(changes)
     })
 
@@ -86,28 +86,28 @@ test("map crud", function() {
     ])
 })
 
-test("map merge", function() {
+test("map merge", function () {
     const a = map({ a: 1, b: 2, c: 2 })
     const b = map({ c: 3, d: 4 })
     a.merge(b)
     expect(a.toJSON()).toEqual({ a: 1, b: 2, c: 3, d: 4 })
 })
 
-test("observe value", function() {
+test("observe value", function () {
     const a = map()
     let hasX = false
     let valueX = undefined
     let valueY = undefined
 
-    autorun(function() {
+    autorun(function () {
         hasX = a.has("x")
     })
 
-    autorun(function() {
+    autorun(function () {
         valueX = a.get("x")
     })
 
-    autorun(function() {
+    autorun(function () {
         valueY = a.get("y")
     })
 
@@ -141,7 +141,7 @@ test("observe value", function() {
     expect(mobx.keys(a)).toEqual(["y", "z"])
 })
 
-test("initialize with entries", function() {
+test("initialize with entries", function () {
     const thing = [{ x: 3 }]
     const a = map([
         ["a", 1],
@@ -153,7 +153,7 @@ test("initialize with entries", function() {
     ])
 })
 
-test("initialize with empty value", function() {
+test("initialize with empty value", function () {
     const a = map()
     const b = map({})
     const c = map([])
@@ -167,17 +167,17 @@ test("initialize with empty value", function() {
     expect(c.toJSON()).toEqual({ "0": 0 })
 })
 
-test("observe collections", function() {
+test("observe collections", function () {
     const x = map()
     let keys, values, entries
 
-    autorun(function() {
+    autorun(function () {
         keys = mobx.keys(x)
     })
-    autorun(function() {
+    autorun(function () {
         values = iteratorToArray(x.values())
     })
-    autorun(function() {
+    autorun(function () {
         entries = iteratorToArray(x.entries())
     })
 
@@ -221,11 +221,11 @@ test("observe collections", function() {
     expect(entries).toEqual([["b", 3]])
 })
 
-test("cleanup", function() {
+test("cleanup", function () {
     const x = map({ a: 1 })
 
     let aValue
-    const disposer = autorun(function() {
+    const disposer = autorun(function () {
         aValue = x.get("a")
     })
 
@@ -248,10 +248,10 @@ test("cleanup", function() {
     expect(x._hasMap.has("a")).toBe(false)
 })
 
-test("getAtom encapsulation leak test", function() {
+test("getAtom encapsulation leak test", function () {
     const x = map({})
 
-    let disposer = autorun(function() {
+    let disposer = autorun(function () {
         x.has("a")
     })
 
@@ -261,7 +261,7 @@ test("getAtom encapsulation leak test", function() {
 
     expect(x._hasMap.get("a")).toBe(undefined)
 
-    disposer = autorun(function() {
+    disposer = autorun(function () {
         x.has("a")
         atom && atom.reportObserved()
     })
@@ -269,14 +269,14 @@ test("getAtom encapsulation leak test", function() {
     expect(x._hasMap.get("a")).not.toBe(atom)
 })
 
-test("strict", function() {
+test("strict", function () {
     const x = map()
-    autorun(function() {
+    autorun(function () {
         x.get("y") // should not throw
     })
 })
 
-test("issue 100", function() {
+test("issue 100", function () {
     const that = {}
     mobx.extendObservable(that, {
         myMap: map()
@@ -285,7 +285,7 @@ test("issue 100", function() {
     expect(typeof that.myMap.observe).toBe("function")
 })
 
-test("issue 119 - unobserve before delete", function() {
+test("issue 119 - unobserve before delete", function () {
     const propValues = []
     const myObservable = mobx.observable({
         myMap: map()
@@ -299,8 +299,8 @@ test("issue 119 - unobserve before delete", function() {
         }
     })
     // the error only happens if the value is observed
-    mobx.autorun(function() {
-        mobx.values(myObservable.myMap).forEach(function(value) {
+    mobx.autorun(function () {
+        mobx.values(myObservable.myMap).forEach(function (value) {
             propValues.push(value.myCalculatedProp)
         })
     })
@@ -309,7 +309,7 @@ test("issue 119 - unobserve before delete", function() {
     expect(propValues).toEqual(["myPropValue calculated"])
 })
 
-test("issue 116 - has should not throw on invalid keys", function() {
+test("issue 116 - has should not throw on invalid keys", function () {
     const x = map()
     expect(x.has(undefined)).toBe(false)
     expect(x.has({})).toBe(false)
@@ -498,22 +498,22 @@ test("798, cannot return observable map from computed prop", () => {
     // MWE: this is an anti pattern, yet should be possible in certain cases nonetheless..?
     // https://jsfiddle.net/7e6Ltscr/
 
-    const form = function() {
+    const form = function () {
         const form = mobx.observable({
             reactPropsMap: mobx.observable.map({
-                onSubmit: function() {}
+                onSubmit: function () {}
             }),
             model: {
                 value: "TEST"
             }
         })
 
-        form.reactPropsMap.set("onSubmit", function() {})
+        form.reactPropsMap.set("onSubmit", function () {})
 
         return form
     }
 
-    const customerSearchStore = function() {
+    const customerSearchStore = function () {
         const customerSearchStore = mobx.observable({
             customerType: "RUBY",
             searchTypeFormStore() {
@@ -557,7 +557,7 @@ test("using deep map", () => {
 
     // Creating autorun triggers one observation, hence -1
     let observed = -1
-    mobx.autorun(function() {
+    mobx.autorun(function () {
         // Use the map, to observe all changes
         mobx.toJS(store.map_deep)
         observed++
@@ -808,7 +808,7 @@ test("can iterate map - values", () => {
     d()
 })
 
-test("NaN as map key", function() {
+test("NaN as map key", function () {
     const a = map(new Map([[NaN, 0]]))
     expect(a.has(NaN)).toBe(true)
     expect(a.get(NaN)).toBe(0)

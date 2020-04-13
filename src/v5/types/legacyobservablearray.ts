@@ -65,7 +65,7 @@ if (Object.isFrozen(Array)) {
         "splice",
         "reverse",
         "sort"
-    ].forEach(function(key) {
+    ].forEach(function (key) {
         Object.defineProperty(StubArray.prototype, key, {
             configurable: true,
             writable: true,
@@ -168,10 +168,10 @@ export class LegacyObservableArray<T> extends StubArray {
 Object.defineProperty(LegacyObservableArray.prototype, "length", {
     enumerable: false,
     configurable: true,
-    get: function(): number {
+    get: function (): number {
         return this[$mobx].getArrayLength()
     },
-    set: function(newLength: number) {
+    set: function (newLength: number) {
         this[$mobx].setArrayLength(newLength)
     }
 })
@@ -203,7 +203,7 @@ if (Symbol.toStringTag) {
         typeof baseFunc === "function",
         `Base function not defined on Array prototype: '${funcName}'`
     )
-    addHiddenProp(LegacyObservableArray.prototype, funcName, function() {
+    addHiddenProp(LegacyObservableArray.prototype, funcName, function () {
         return baseFunc.apply(this.peek(), arguments)
     })
 })
@@ -270,10 +270,10 @@ function createArrayEntryDescriptor(index: number) {
     return {
         enumerable: false,
         configurable: true,
-        get: function() {
+        get: function () {
             return this.get(index)
         },
-        set: function(value) {
+        set: function (value) {
             this.set(index, value)
         }
     }

@@ -4,7 +4,7 @@ const mobx = require("../../../src/v5/mobx.ts")
 const m = mobx
 const observable = mobx.observable
 
-test("json1", function() {
+test("json1", function () {
     mobx._resetGlobalState()
 
     const todos = observable([
@@ -17,9 +17,9 @@ test("json1", function() {
     ])
 
     let output
-    mobx.autorun(function() {
+    mobx.autorun(function () {
         output = todos
-            .map(function(todo) {
+            .map(function (todo) {
                 return todo.title
             })
             .join(", ")
@@ -31,7 +31,7 @@ test("json1", function() {
     expect(output).toBe("write blog, improve coverage, take a nap")
 })
 
-test("json2", function() {
+test("json2", function () {
     const source = {
         todos: [
             {
@@ -55,13 +55,13 @@ test("json2", function() {
 
     expect(mobx.toJS(o)).toEqual(source)
 
-    const analyze = mobx.computed(function() {
+    const analyze = mobx.computed(function () {
         return [o.todos.length, o.todos[1].details.url]
     })
 
-    const alltags = mobx.computed(function() {
+    const alltags = mobx.computed(function () {
         return o.todos
-            .map(function(todo) {
+            .map(function (todo) {
                 return todo.tags.join(",")
             })
             .join(",")
@@ -72,14 +72,14 @@ test("json2", function() {
 
     m.observe(
         analyze,
-        function(d) {
+        function (d) {
             ab.push(d.newValue)
         },
         true
     )
     m.observe(
         alltags,
-        function(d) {
+        function (d) {
             tb.push(d.newValue)
         },
         true
@@ -108,7 +108,10 @@ test("json2", function() {
             }
         ]
     })
-    expect(ab).toEqual([[2, "here"], [2, "ba"]])
+    expect(ab).toEqual([
+        [2, "here"],
+        [2, "ba"]
+    ])
     expect(tb).toEqual(["react,frp,mweh", "reactjs,frp,mweh", "reactjs,frp,mweh,pff"])
     ab = []
     tb = []
@@ -237,7 +240,7 @@ test("toJS handles symbol keys in objects and maps", () => {
     expect(y[key]).toBe(43)
 })
 
-test("json cycles", function() {
+test("json cycles", function () {
     const a = observable({
         b: 1,
         c: [2],
@@ -329,7 +332,7 @@ test("verify already seen", () => {
     expect(res.x === a).toBeFalsy()
 })
 
-test("json cycles when exporting maps as maps", function() {
+test("json cycles when exporting maps as maps", function () {
     const a = observable({
         b: 1,
         c: [2],
@@ -358,8 +361,8 @@ test("json cycles when exporting maps as maps", function() {
     expect(cloneA.e).toBe(cloneA)
 })
 
-describe("recurseEverything set to true", function() {
-    test("prototype chain will be removed even if the object is not observable", function() {
+describe("recurseEverything set to true", function () {
+    test("prototype chain will be removed even if the object is not observable", function () {
         function Person() {
             this.firstname = "michel"
             this.lastname = "weststrate"
@@ -372,9 +375,9 @@ describe("recurseEverything set to true", function() {
         expect(mobx.toJS(p)).toEqual(mobx.toJS(p, { recurseEverything: true }))
     })
 
-    test("properties on prototype should be flattened to plain object", function() {
+    test("properties on prototype should be flattened to plain object", function () {
         const observableValue = mobx.observable.box("b")
-        const Base = function() {
+        const Base = function () {
             this.a = "a"
         }
         const derived = Object.create(new Base(), {
@@ -393,19 +396,19 @@ describe("recurseEverything set to true", function() {
         expect(deepCopy.hasOwnProperty("a")).toBeTruthy()
     })
 
-    test("Date type should not be converted", function() {
+    test("Date type should not be converted", function () {
         const date = new Date()
         expect(mobx.toJS(mobx.observable.box(date), { recurseEverything: true })).toBe(date)
     })
 
-    describe("observable array", function() {
-        test("observable array should be converted to a plain array", function() {
+    describe("observable array", function () {
+        test("observable array should be converted to a plain array", function () {
             const arr = [1, 2, 3]
             expect(mobx.toJS(mobx.observable.array(arr), { recurseEverything: true })).toEqual(arr)
             expect(mobx.toJS(arr, { recurseEverything: true })).toEqual(arr)
         })
 
-        test("observable array inside an array will be converted with recurseEverything flag", function() {
+        test("observable array inside an array will be converted with recurseEverything flag", function () {
             const obj = { arr: mobx.observable.array([1, 2, 3]) }
             expect(mobx.isObservable(mobx.toJS(obj).arr)).toBeTruthy()
             expect(mobx.isObservable(mobx.toJS(obj, { recurseEverything: true }).arr)).toBeFalsy()
@@ -413,14 +416,14 @@ describe("recurseEverything set to true", function() {
         })
     })
 
-    test("detectCycles should forcibly be set to true if recurseEverything is true", function() {
+    test("detectCycles should forcibly be set to true if recurseEverything is true", function () {
         const cycledObj = {}
         cycledObj.cycle = cycledObj
         const convertedObj = mobx.toJS({ key: cycledObj }, { recurseEverything: true })
         expect(convertedObj.key).toBe(convertedObj.key.cycle)
     })
 
-    test("should return null if source is null", function() {
+    test("should return null if source is null", function () {
         expect(mobx.toJS(null)).toBeNull()
         expect(mobx.toJS(null, { recurseEverything: true })).toBeNull()
     })

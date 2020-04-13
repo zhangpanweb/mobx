@@ -4,7 +4,7 @@ const m = mobx
 const { $mobx } = mobx
 const { makeObservable } = mobx
 
-test("treeD", function() {
+test("treeD", function () {
     m._resetGlobalState()
     mobx._getGlobalState().mobxGuid = 0
     const a = m.observable.box(3)
@@ -56,7 +56,7 @@ test("treeD", function() {
     })
 
     const x = mobx.observable.map({ temperature: 0 })
-    const d = mobx.autorun(function() {
+    const d = mobx.autorun(function () {
         Array.from(x.keys())
         if (x.has("temperature")) x.get("temperature")
         x.has("absent")
@@ -81,7 +81,7 @@ test("treeD", function() {
     })
 })
 
-test("names", function() {
+test("names", function () {
     m._resetGlobalState()
     mobx._getGlobalState().mobxGuid = 0
 
@@ -111,12 +111,12 @@ test("names", function() {
     expect(rstruct.y.a[$mobx].values.get("b").name).toBe("ObservableObject@1.y.a.b")
     expect(rstruct.ar[2][$mobx].values.get("b").name).toBe("ObservableObject@1.ar[..].b")
 
-    const d = m.autorun(function() {})
+    const d = m.autorun(function () {})
     expect(d[$mobx].name).toBeTruthy()
 
     expect(m.autorun(function namedFunction() {})[$mobx].name).toBe("namedFunction")
 
-    expect(m.computed(function() {})).toBeTruthy()
+    expect(m.computed(function () {})).toBeTruthy()
 
     expect(m.computed(function namedFunction() {}).name).toBe("namedFunction")
 
@@ -132,7 +132,7 @@ test("names", function() {
 })
 
 function stripTrackerOutput(output) {
-    return output.map(function(i) {
+    return output.map(function (i) {
         if (Array.isArray(i)) return stripTrackerOutput(i)
         delete i.object
         delete i.time
@@ -141,18 +141,18 @@ function stripTrackerOutput(output) {
     })
 }
 
-test("spy 1", function() {
+test("spy 1", function () {
     m._resetGlobalState()
     const lines = []
 
     const a = m.observable.box(3)
-    const b = m.computed(function() {
+    const b = m.computed(function () {
         return a.get() * 2
     })
-    m.autorun(function() {
+    m.autorun(function () {
         b.get()
     })
-    const stop = m.spy(function(line) {
+    const stop = m.spy(function (line) {
         lines.push(line)
     })
 
@@ -162,7 +162,7 @@ test("spy 1", function() {
     expect(stripTrackerOutput(lines)).toMatchSnapshot()
 })
 
-test("get atom", function() {
+test("get atom", function () {
     mobx._resetGlobalState()
     mobx._getGlobalState().mobxGuid = 0 // hmm dangerous reset?
 
@@ -215,7 +215,7 @@ test("get atom", function() {
     f()
 })
 
-test("get debug name", function() {
+test("get debug name", function () {
     mobx._resetGlobalState()
     mobx._getGlobalState().mobxGuid = 0 // hmm dangerous reset?
 
@@ -263,7 +263,7 @@ test("get debug name", function() {
     f()
 })
 
-test("get administration", function() {
+test("get administration", function () {
     mobx._resetGlobalState()
     mobx._getGlobalState().mobxGuid = 0 // hmm dangerous reset?
 

@@ -115,7 +115,7 @@ export {
     allowStateReadsStart as _allowStateReadsStart,
     allowStateReadsEnd as _allowStateReadsEnd,
     makeObservable,
-    makeAutoObservable,
+    makeAutoObservable
 } from "./internal"
 export type {
     IObservable,
@@ -159,7 +159,7 @@ export type {
     IDependencyTree,
     Lambda,
     IComputedValueOptions,
-    IActionRunInfo,
+    IActionRunInfo
 } from "./internal"
 
 // Devtools support
@@ -169,8 +169,8 @@ if (typeof __MOBX_DEVTOOLS_GLOBAL_HOOK__ === "object") {
     __MOBX_DEVTOOLS_GLOBAL_HOOK__.injectMobx({
         spy,
         extras: {
-            getDebugName,
+            getDebugName
         },
-        $mobx,
+        $mobx
     })
 }

@@ -1,9 +1,9 @@
 "use strict"
 
-exports.consoleError = function(block, regex) {
+exports.consoleError = function (block, regex) {
     let messages = ""
     const orig = console.error
-    console.error = function() {
+    console.error = function () {
         Object.keys(arguments).forEach(key => {
             messages += ", " + arguments[key]
         })
@@ -19,10 +19,10 @@ exports.consoleError = function(block, regex) {
     return messages
 }
 
-exports.consoleWarn = function(block, regex) {
+exports.consoleWarn = function (block, regex) {
     let messages = ""
     const orig = console.warn
-    console.warn = function() {
+    console.warn = function () {
         Object.keys(arguments).forEach(key => {
             messages += ", " + arguments[key]
         })
@@ -37,7 +37,7 @@ exports.consoleWarn = function(block, regex) {
     expect(messages).toMatch(regex)
 }
 
-exports.supressConsole = function(block) {
+exports.supressConsole = function (block) {
     const messages = []
     const { warn, error } = console
     Object.assign(console, {

@@ -6,7 +6,7 @@ export function createDecorator<ArgType>(
     type: Annotation["annotationType"]
 ): Annotation & PropertyDecorator & ((arg: ArgType) => PropertyDecorator & Annotation) {
     return Object.assign(
-        function(target: any, property?: PropertyKey): any {
+        function (target: any, property?: PropertyKey): any {
             if (arguments.length === 1) {
                 // @decorator(arg) member
                 createDecoratorAndAnnotation(type, target)
@@ -28,7 +28,7 @@ export function createDecoratorAndAnnotation(
     arg?: any
 ): PropertyDecorator & Annotation {
     return Object.assign(
-        function(target, property) {
+        function (target, property) {
             storeDecorator(target, property, type, arg)
         },
         {
