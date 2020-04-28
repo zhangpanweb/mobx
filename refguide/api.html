@@ -342,7 +342,7 @@ Returns a disposer function to cancel the side effect.</p>
 <p><strong>options</strong></p>
 <ul>
 <li><strong><code>name?: string</code></strong>: A name for easier identification and debugging</li>
-<li><strong><code>delay?: number</code></strong>: the sideEffect will be delayed and debounced with the given <code>delay</code>. Defaults to <code>0</code>.</li>
+<li><strong><code>delay?: number</code></strong>: the sideEffect will be delayed and throttled with the given <code>delay</code>. Defaults to <code>0</code>.</li>
 <li><strong><code>onError?: (error) =&gt; void</code></strong>: error handler that will be triggered if the autorun function throws an exception</li>
 <li><strong><code>scheduler?: (callback) =&gt; void</code></strong>: Set a custom scheduler to determine how re-running the autorun function should be scheduled</li>
 <li><strong><code>requiresObservable?: boolean</code></strong> Enables <a href="#reactionrequiresobservable-boolean"><code>reactionRequiresObservable</code></a> locally for the autorun</li>
@@ -367,12 +367,12 @@ As soon as the expression returns true the sideEffect function will be invoked, 
 A variation on <code>autorun</code> that gives more fine-grained control on which observables that will be tracked.
 It takes two function, the first one is tracked and returns data that is used as input for the second one, the side effect.
 Unlike <code>autorun</code> the side effect won't be run initially, and any observables that are accessed while executing the side effect will not be tracked.
-The side effect can be debounced, just like <code>autorunAsync</code>.</p>
+The side effect can be throttled, just like <code>autorunAsync</code>.</p>
 <p><a href="/refguide/reaction.html">«details»</a></p>
 <p><strong>options</strong></p>
 <ul>
 <li><strong><code>fireImmediately?: boolean</code></strong>: Wait for a change before firing the <em>effect function</em>. Defaults to <code>false</code>.</li>
-<li><strong><code>delay?: number</code></strong>: the sideEffect will be delayed and debounced with the given <code>delay</code>. Defaults to <code>0</code>.</li>
+<li><strong><code>delay?: number</code></strong>: the sideEffect will be delayed and throttled with the given <code>delay</code>. Defaults to <code>0</code>.</li>
 <li><strong><code>equals</code></strong>: Custom equality function to determine whether the expr function differed from it's previous result, and hence should fire effect. Accepts the same options as the equals option of <code>computed</code>.</li>
 <li>Also accepts all of the options from <a href="#autorun"><code>autorun</code></a></li>
 <li><strong><code>requiresObservable?: boolean</code></strong> Enables <a href="#reactionrequiresobservable-boolean"><code>reactionRequiresObservable</code></a> locally for the reaction</li>
