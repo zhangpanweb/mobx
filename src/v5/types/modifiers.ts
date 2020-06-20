@@ -18,10 +18,11 @@ export interface IEnhancer<T> {
 
 export function deepEnhancer(v, _, name) {
     // it is an observable already, done
+    // 如果 v 已经是 observable，直接返回
     if (isObservable(v)) return v
 
     // something that can be converted and mutated?
-    if (Array.isArray(v)) return observable.array(v, { name })
+    if (Array.isArray(v)) return observable.array(v, { name }) // v是数组，用 observable.array
     if (isPlainObject(v)) return observable.object(v, undefined, { name })
     if (isES6Map(v)) return observable.map(v, { name })
     if (isES6Set(v)) return observable.set(v, { name })

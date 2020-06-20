@@ -58,6 +58,7 @@ export class ObservableValue<T> extends Atom
         private equals: IEqualsComparer<any> = comparer.default
     ) {
         super(name)
+        // 用 enhancer 增强 value
         this.value = enhancer(value, undefined, name)
         if (notifySpy && isSpyEnabled() && process.env.NODE_ENV !== "production") {
             // only notify spy if this is a stand-alone observable
@@ -88,7 +89,9 @@ export class ObservableValue<T> extends Atom
         }
     }
 
+    // 对 newValue 进行处理
     private prepareNewValue(newValue): T | IUNCHANGED {
+        // 检查是否允许进行状态变更
         checkIfStateModificationsAreAllowed(this)
         if (hasInterceptors(this)) {
             const change = interceptChange<IValueWillChange<T>>(this, {
@@ -100,14 +103,15 @@ export class ObservableValue<T> extends Atom
             newValue = change.newValue
         }
         // apply modifier
+        // 调用 enhancer
         newValue = this.enhancer(newValue, this.value, this.name)
         return this.equals(this.value, newValue) ? globalState.UNCHANGED : newValue
     }
 
     setNewValue(newValue: T) {
         const oldValue = this.value
-        this.value = newValue
-        this.reportChanged()
+        this.value = newValue // 设置新值
+        this.reportChanged() // 报告更新，如果这个值被引用，更新被引用
         if (hasListeners(this)) {
             notifyListeners(this, {
                 type: "update",
@@ -119,7 +123,7 @@ export class ObservableValue<T> extends Atom
     }
 
     public get(): T {
-        this.reportObserved()
+        this.reportObserved() // 报告 observed
         return this.dehanceValue(this.value)
     }
 

@@ -72,13 +72,14 @@ export class Reaction implements IDerivation, IReactionPublic {
     ) {}
 
     onBecomeStale() {
+        // reaction 过期，重新 schedule 进行执行
         this.schedule()
     }
 
     schedule() {
         if (!this._isScheduled) {
-            this._isScheduled = true
-            globalState.pendingReactions.push(this)
+            this._isScheduled = true // 设置 isScheduled
+            globalState.pendingReactions.push(this) // 将 this 推入待执行 reaction 队列中
             runReactions()
         }
     }
@@ -120,6 +121,7 @@ export class Reaction implements IDerivation, IReactionPublic {
 
     track(fn: () => void) {
         if (this.isDisposed) {
+            // 已经被 disposed，直接返回
             return
             // console.warn("Reaction already disposed") // Note: Not a warning / error in mobx 4 either
         }
@@ -133,7 +135,7 @@ export class Reaction implements IDerivation, IReactionPublic {
                 type: "reaction"
             })
         }
-        this._isRunning = true
+        this._isRunning = true // reaction 正在执行
         const result = trackDerivedFunction(this, fn, undefined)
         this._isRunning = false
         this._isTrackPending = false
@@ -224,13 +226,14 @@ let reactionScheduler: (fn: () => void) => void = f => f()
 
 export function runReactions() {
     // Trampolining, if runReactions are already running, new reactions will be picked up
+    // 如果 in batch block，或者正在处理 reaction，不重复进行
     if (globalState.inBatch > 0 || globalState.isRunningReactions) return
     reactionScheduler(runReactionsHelper)
 }
 
 function runReactionsHelper() {
-    globalState.isRunningReactions = true
-    const allReactions = globalState.pendingReactions
+    globalState.isRunningReactions = true // 正在处理 reaction
+    const allReactions = globalState.pendingReactions // 获取所有未执行的 reaction
     let iterations = 0
 
     // While running reactions, new reactions might be triggered.
@@ -246,7 +249,7 @@ function runReactionsHelper() {
         }
         let remainingReactions = allReactions.splice(0)
         for (let i = 0, l = remainingReactions.length; i < l; i++)
-            remainingReactions[i].runReaction()
+            remainingReactions[i].runReaction() // 遍历执行 remainingReactions
     }
     globalState.isRunningReactions = false
 }

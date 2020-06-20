@@ -12,10 +12,14 @@ import {
 export enum IDerivationState {
     // before being run or (outside batch and not being observed)
     // at this point derivation is not holding any data about dependency tree
+    // 在执行之前
+    // 在这个点，derivation 没有持有依赖树的任何值
     NOT_TRACKING = -1,
     // no shallow dependency changed since last computation
     // won't recalculate derivation
     // this is what makes mobx fast
+    // 自从上次计算之后没有浅依赖改变
+    // 不会再次计算 derivation
     UP_TO_DATE = 0,
     // some deep dependency changed, but don't know if shallow dependency changed
     // will require to check first if UP_TO_DATE or POSSIBLY_STALE
@@ -23,9 +27,11 @@ export enum IDerivationState {
     //
     // having this state is second big optimization:
     // don't have to recompute on every dependency change, but only when it's needed
+    // 有些深依赖更新了，但是不知道是否有浅依赖更新
     POSSIBLY_STALE = 1,
     // A shallow dependency has changed since last computation and the derivation
     // will need to recompute when it's needed next.
+    // 自从上次计算后有浅依赖更新，如果被需要，需要执行再次计算
     STALE = 2
 }
 
@@ -150,9 +156,7 @@ export function checkIfStateModificationsAreAllowed(atom: IAtom) {
     if (globalState.computationDepth > 0 && hasObservers)
         fail(
             process.env.NODE_ENV !== "production" &&
-                `Computed values are not allowed to cause side effects by changing observables that are already being observed. Tried to modify: ${
-                    atom.name
-                }`
+                `Computed values are not allowed to cause side effects by changing observables that are already being observed. Tried to modify: ${atom.name}`
         )
     // Should not be possible to change observed state outside strict mode, except during initialization, see #563
     if (!globalState.allowStateChanges && (hasObservers || globalState.enforceActions === "strict"))
@@ -189,6 +193,8 @@ export function trackDerivedFunction<T>(derivation: IDerivation, f: () => T, con
     derivation.unboundDepsCount = 0
     derivation.runId = ++globalState.runId
     const prevTracking = globalState.trackingDerivation
+    // 将正在跟踪的 derivatioin 设置为现在的 derivation
+    // 在执行 f.call(context) 过程中，会从 globalState.trackingDerivation，将依赖设置在现在的 derivation 上
     globalState.trackingDerivation = derivation
     let result
     if (globalState.disableErrorBoundaries === true) {
@@ -217,9 +223,7 @@ function warnAboutDerivationWithoutDependencies(derivation: IDerivation) {
 
     if (globalState.reactionRequiresObservable || derivation.requiresObservable) {
         console.warn(
-            `[mobx] Derivation ${
-                derivation.name
-            } is created/updated without reading any observable value`
+            `[mobx] Derivation ${derivation.name} is created/updated without reading any observable value`
         )
     }
 }
@@ -243,8 +247,9 @@ function bindDependencies(derivation: IDerivation) {
     for (let i = 0; i < l; i++) {
         const dep = observing[i]
         if (dep.diffValue === 0) {
+            // diffValue 是 0 表示是第一次出现，设置为 1
             dep.diffValue = 1
-            if (i0 !== i) observing[i0] = dep
+            if (i0 !== i) observing[i0] = dep // dep 继续放在 observing 中
             i0++
         }
 

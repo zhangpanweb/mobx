@@ -1,6 +1,7 @@
 import { $mobx, fail, getAtom, isComputedValue, isObservableObject } from "../internal"
 
 export function _isComputed(value, property?: string): boolean {
+    // value 是 null 或 undefined，不是计算值
     if (value === null || value === undefined) return false
     if (property !== undefined) {
         if (isObservableObject(value) === false) return false

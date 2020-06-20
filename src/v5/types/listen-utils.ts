@@ -24,6 +24,7 @@ export function notifyListeners<T>(listenable: IListenable, change: T) {
     if (!listeners) return
     listeners = listeners.slice()
     for (let i = 0, l = listeners.length; i < l; i++) {
+        // 遍历 listener 使用 change 调用
         listeners[i](change)
     }
     untrackedEnd(prevU)

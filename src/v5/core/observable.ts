@@ -67,7 +67,7 @@ export function addObserver(observable: IObservable, node: IDerivation) {
     // invariant(node.dependenciesState !== -1, "INTERNAL ERROR, can add only dependenciesState !== -1");
     // invariant(observable._observers.indexOf(node) === -1, "INTERNAL ERROR add already added node");
     // invariantObservers(observable);
-
+    // 将 node 增加到 observable.observers 中
     observable.observers.add(node)
     if (observable.lowestObserverState > node.dependenciesState)
         observable.lowestObserverState = node.dependenciesState
@@ -134,7 +134,7 @@ export function endBatch() {
 export function reportObserved(observable: IObservable): boolean {
     checkIfStateReadsAreAllowed(observable)
 
-    const derivation = globalState.trackingDerivation
+    const derivation = globalState.trackingDerivation // 获取现在正在 tracking 的 derivation
     if (derivation !== null) {
         /**
          * Simple optimization, give each derivation run an unique id (runId)
@@ -144,9 +144,10 @@ export function reportObserved(observable: IObservable): boolean {
         if (derivation.runId !== observable.lastAccessedBy) {
             observable.lastAccessedBy = derivation.runId
             // Tried storing newObserving, or observing, or both as Set, but performance didn't come close...
+            // 将 observable 存入 newObsering 中，作为 derivation 的一个依赖
             derivation.newObserving![derivation.unboundDepsCount++] = observable
             if (!observable.isBeingObserved) {
-                observable.isBeingObserved = true
+                observable.isBeingObserved = true // observable 在被其他地方引用，正在被 observed
                 observable.onBecomeObserved()
             }
         }
@@ -184,9 +185,10 @@ export function reportObserved(observable: IObservable): boolean {
 export function propagateChanged(observable: IObservable) {
     // invariantLOS(observable, "changed start");
     if (observable.lowestObserverState === IDerivationState.STALE) return
-    observable.lowestObserverState = IDerivationState.STALE
+    observable.lowestObserverState = IDerivationState.STALE // 此 observable 已过期，再次引用需要重新计算
 
     // Ideally we use for..of here, but the downcompiled version is really slow...
+    // 对于每个引用这个 observable 的地方，进行重新执行
     observable.observers.forEach(d => {
         if (d.dependenciesState === IDerivationState.UP_TO_DATE) {
             if (d.isTracing !== TraceMode.NONE) {

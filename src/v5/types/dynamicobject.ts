@@ -8,6 +8,7 @@ import {
     set
 } from "../internal"
 
+// 通过 $mobx 属性获取 target 的 adm
 function getAdm(target): ObservableObjectAdministration {
     return target[$mobx]
 }
@@ -30,11 +31,14 @@ const objectProxyTraps: ProxyHandler<any> = {
         return (name as any) in target
     },
     get(target: IIsObservableObject, name: PropertyKey) {
+        // 如果需要的是 mobx 内部是一些属性，可以直接返回
         if (name === $mobx || name === "constructor" || name === mobxDidRunLazyInitializersSymbol)
             return target[name]
+        // 获取 adm
         const adm = getAdm(target)
         const observable = adm.values.get(name)
         if (observable instanceof Atom) {
+            // 如果 observable 是 Atom，通过 observable.get 获取值
             const result = (observable as any).get()
             if (result === undefined) {
                 // This fixes #1796, because deleting a prop that has an
@@ -47,9 +51,11 @@ const objectProxyTraps: ProxyHandler<any> = {
         // make sure we start listening to future keys
         // note that we only do this here for optimization
         if (isPropertyKey(name)) adm.has(name)
+        // 否则 通过 target[name] 获取值
         return target[name]
     },
     set(target: IIsObservableObject, name: PropertyKey, value: any) {
+        // 验证 name 是 string 或 number 或 symbols
         if (!isPropertyKey(name)) return false
         set(target, name, value)
         return true
@@ -72,7 +78,7 @@ const objectProxyTraps: ProxyHandler<any> = {
 }
 
 export function createDynamicObservableObject(base) {
-    const proxy = new Proxy(base, objectProxyTraps)
-    base[$mobx].proxy = proxy
-    return proxy
+    const proxy = new Proxy(base, objectProxyTraps) // 创建 proxy
+    base[$mobx].proxy = proxy // 将 proxy 挂载在 base $mobx 属性的 proxy 属性上
+    return proxy // 返回 proxy
 }

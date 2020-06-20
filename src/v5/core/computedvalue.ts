@@ -105,8 +105,9 @@ export class ComputedValue<T> implements IObservable, IComputedValue<T>, IDeriva
      * This is useful for working with vectors, mouse coordinates etc.
      */
     constructor(options: IComputedValueOptions<T>) {
+        // options 没有 get，报错
         invariant(options.get, "missing option for computed: get")
-        this.derivation = options.get!
+        this.derivation = options.get! // 将 options.get 赋给 this.derivation
         this.name = options.name || "ComputedValue@" + getNextId()
         if (options.set) this.setter = createAction(this.name + "-setter", options.set) as any
         this.equals =
@@ -114,7 +115,7 @@ export class ComputedValue<T> implements IObservable, IComputedValue<T>, IDeriva
             ((options as any).compareStructural || (options as any).struct
                 ? comparer.structural
                 : comparer.default)
-        this.scope = options.context
+        this.scope = options.context // 计算属性的上下文，this 绑定值
         this.requiresReaction = !!options.requiresReaction
         this.keepAlive = !!options.keepAlive
     }
@@ -141,24 +142,26 @@ export class ComputedValue<T> implements IObservable, IComputedValue<T>, IDeriva
     /**
      * Returns the current value of this computed value.
      * Will evaluate its computation first if needed.
+     * 返回计算属性的现有值
      */
     public get(): T {
+        // 如果 isComputing，报错
         if (this.isComputing) fail(`Cycle detected in computation ${this.name}: ${this.derivation}`)
         if (globalState.inBatch === 0 && this.observers.size === 0 && !this.keepAlive) {
             if (shouldCompute(this)) {
                 this.warnAboutUntrackedRead()
                 startBatch() // See perf test 'computed memoization'
-                this.value = this.computeValue(false)
+                this.value = this.computeValue(false) // 计算值
                 endBatch()
             }
         } else {
             reportObserved(this)
             if (shouldCompute(this)) if (this.trackAndCompute()) propagateChangeConfirmed(this)
         }
-        const result = this.value!
+        const result = this.value! // 计算后的值赋值给 result
 
-        if (isCaughtException(result)) throw result.cause
-        return result
+        if (isCaughtException(result)) throw result.cause // 如果计算后的值是 CaughtException，报错
+        return result // 返回计算结果
     }
 
     public peek(): T {
@@ -171,9 +174,7 @@ export class ComputedValue<T> implements IObservable, IComputedValue<T>, IDeriva
         if (this.setter) {
             invariant(
                 !this.isRunningSetter,
-                `The setter of computed value '${
-                    this.name
-                }' is trying to update itself. Did you intend to update an _observable_ value, instead of the computed property?`
+                `The setter of computed value '${this.name}' is trying to update itself. Did you intend to update an _observable_ value, instead of the computed property?`
             )
             this.isRunningSetter = true
             try {
@@ -185,9 +186,7 @@ export class ComputedValue<T> implements IObservable, IComputedValue<T>, IDeriva
             invariant(
                 false,
                 process.env.NODE_ENV !== "production" &&
-                    `[ComputedValue '${
-                        this.name
-                    }'] It is not possible to assign a new value to a computed value.`
+                    `[ComputedValue '${this.name}'] It is not possible to assign a new value to a computed value.`
             )
     }
 
@@ -218,7 +217,7 @@ export class ComputedValue<T> implements IObservable, IComputedValue<T>, IDeriva
     }
 
     computeValue(track: boolean) {
-        this.isComputing = true
+        this.isComputing = true // 正在计算中
         globalState.computationDepth++
         let res: T | CaughtException
         if (track) {
@@ -273,16 +272,12 @@ export class ComputedValue<T> implements IObservable, IComputedValue<T>, IDeriva
         }
         if (this.isTracing !== TraceMode.NONE) {
             console.log(
-                `[mobx.trace] '${
-                    this.name
-                }' is being read outside a reactive context. Doing a full recompute`
+                `[mobx.trace] '${this.name}' is being read outside a reactive context. Doing a full recompute`
             )
         }
         if (globalState.computedRequiresReaction) {
             console.warn(
-                `[mobx] Computed value ${
-                    this.name
-                } is being read outside a reactive context. Doing a full recompute`
+                `[mobx] Computed value ${this.name} is being read outside a reactive context. Doing a full recompute`
             )
         }
     }

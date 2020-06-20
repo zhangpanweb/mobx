@@ -18,6 +18,7 @@
 
 import { getGlobal, spy, getDebugName, $mobx } from "./internal"
 
+// Mobx 5+ 需要 Proxy 和 Symbol
 if (typeof Proxy === "undefined" || typeof Symbol === "undefined") {
     throw new Error(
         "[mobx] MobX 5+ requires Proxy and Symbol objects. If your environment doesn't support Symbol or Proxy objects, please downgrade to MobX 4. For React Native Android, consider upgrading JSCore."
@@ -40,7 +41,8 @@ try {
     if (
         testCodeMinification.name !== "testCodeMinification" &&
         process.env.NODE_ENV !== "production" &&
-        typeof process !== 'undefined' && process.env.IGNORE_MOBX_MINIFY_WARNING !== "true"
+        typeof process !== "undefined" &&
+        process.env.IGNORE_MOBX_MINIFY_WARNING !== "true"
     ) {
         // trick so it doesn't get replaced
         const varName = ["process", "env", "NODE_ENV"].join(".")

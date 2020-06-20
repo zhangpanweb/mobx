@@ -102,6 +102,7 @@ export function createPropDecorator(
         }
 
         if (quacksLikeADecorator(arguments)) {
+            // 是否当做装饰器使用
             // @decorator
             decoratorArguments = EMPTY_ARRAY
             return decorator.apply(null, arguments as any)

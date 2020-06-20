@@ -11,6 +11,7 @@ import {
 } from "../internal"
 
 function _isObservable(value, property?: string): boolean {
+    // 排除 null 和 undefined
     if (value === null || value === undefined) return false
     if (property !== undefined) {
         if (
@@ -26,12 +27,13 @@ function _isObservable(value, property?: string): boolean {
         return false
     }
     // For first check, see #701
+    // property 为 undefined， 只检测 value
     return (
-        isObservableObject(value) ||
-        !!value[$mobx] ||
-        isAtom(value) ||
-        isReaction(value) ||
-        isComputedValue(value)
+        isObservableObject(value) || // 是 observable object
+        !!value[$mobx] || // 有 $mobx 属性
+        isAtom(value) || // 是 Atom
+        isReaction(value) || // 是 Reaction
+        isComputedValue(value) // 是 ComputedValue
     )
 }
 

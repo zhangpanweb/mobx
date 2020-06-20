@@ -95,6 +95,8 @@ export function set<T extends Object>(obj: T, values: { [key: string]: any })
 export function set<T extends Object>(obj: T, key: PropertyKey, value: any)
 export function set(obj: any, key: any, value?: any): void {
     if (arguments.length === 2 && !isObservableSet(obj)) {
+        // 如果只有两个参数，也就是只有key，并且 obj 不是 observableSet
+        // 遍历 key 对象，依次更新属性
         startBatch()
         const values = key
         try {
@@ -107,9 +109,11 @@ export function set(obj: any, key: any, value?: any): void {
     if (isObservableObject(obj)) {
         const adm = ((obj as any) as IIsObservableObject)[$mobx]
         const existingObservable = adm.values.get(key)
+        // 如果 existingObservable 存在，说明是之前存在的属性，调用 write方法
         if (existingObservable) {
             adm.write(key, value)
         } else {
+            // 否则调用 addObservableProp ，增加属性
             adm.addObservableProp(key, value, adm.defaultEnhancer)
         }
     } else if (isObservableMap(obj)) {

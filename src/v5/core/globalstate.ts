@@ -31,11 +31,13 @@ export class MobXGlobals {
 
     /**
      * globally unique token to signal unchanged
+     * 全局用于表示未改变的token
      */
     UNCHANGED: IUNCHANGED = {}
 
     /**
      * Currently running derivation
+     * 现在正在执行的 derivation
      */
     trackingDerivation: IDerivation | null = null
 
@@ -87,6 +89,7 @@ export class MobXGlobals {
     /**
      * Is it allowed to read observables at this point?
      * Used to hold the state needed for `observableRequiresReaction`
+     * 是否允许此时读取observable
      */
     allowStateReads = true
 
@@ -125,12 +128,14 @@ export class MobXGlobals {
     /**
      * Allows overwriting of computed properties, useful in tests but not prod as it can cause
      * memory leaks. See https://github.com/mobxjs/mobx/issues/1867
+     * 通过这个值复写计算属性的 configurable
      */
     computedConfigurable = false
 
     /*
      * Don't catch and rethrow exceptions. This is useful for inspecting the state of
      * the stack when an exception occurs while debugging.
+     * 是否 catch 错误
      */
     disableErrorBoundaries = false
 

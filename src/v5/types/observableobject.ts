@@ -97,12 +97,14 @@ export class ObservableObjectAdministration
     write(key: PropertyKey, newValue) {
         const instance = this.target
         const observable = this.values.get(key)
+        // 如果 observable 是 ComputedValue，调用 set
         if (observable instanceof ComputedValue) {
             observable.set(newValue)
             return
         }
 
         // intercept
+        // 如果有 intercept，调用 intercept
         if (hasInterceptors(this)) {
             const change = interceptChange<IObjectWillChange>(this, {
                 type: "update",
@@ -117,7 +119,8 @@ export class ObservableObjectAdministration
 
         // notify spy & observers
         if (newValue !== globalState.UNCHANGED) {
-            const notify = hasListeners(this)
+            // 如果 newValue 对比原值是有改变的
+            const notify = hasListeners(this) // 对这个 observable object 有监听者
             const notifySpy = isSpyEnabled()
             const change =
                 notify || notifySpy
@@ -146,7 +149,7 @@ export class ObservableObjectAdministration
             const exists = !!this.values.get(key)
             // Possible optimization: Don't have a separate map for non existing keys,
             // but store them in the values map instead, using a special symbol to denote "not existing"
-            entry = new ObservableValue(
+            entry = new ObservableValue( // 将 key 是否存在也设置为一个 ObservableValue
                 exists,
                 referenceEnhancer,
                 `${this.name}.${stringifyKey(key)}?`,
@@ -175,12 +178,14 @@ export class ObservableObjectAdministration
             if (!change) return
             newValue = (change as any).newValue
         }
+        // 使用新值构建一个 observableValue
         const observable = new ObservableValue(
             newValue,
             enhancer,
             `${this.name}.${stringifyKey(propName)}`,
             false
         )
+        // 设置 propName 的值位 observable
         this.values.set(propName, observable)
         newValue = (observable as any).value // observableValue might have changed it
 
@@ -188,6 +193,7 @@ export class ObservableObjectAdministration
         this.notifyPropertyAddition(propName, newValue)
     }
 
+    // 将一个计算属性增加到 observableObject 中
     addComputedProp(
         propertyOwner: any, // where is the property declared?
         propName: PropertyKey,
@@ -195,6 +201,7 @@ export class ObservableObjectAdministration
     ) {
         const { target } = this
         options.name = options.name || `${this.name}.${stringifyKey(propName)}`
+        // values 设置 propName 和 一个 ComputedValue
         this.values.set(propName, new ComputedValue(options))
         if (propertyOwner === target || isPropertyConfigurable(propertyOwner, propName))
             Object.defineProperty(propertyOwner, propName, generateComputedPropConfig(propName))
@@ -325,18 +332,24 @@ export interface IIsObservableObject {
     $mobx: ObservableObjectAdministration
 }
 
+// 把 target 转化成一个 observable object
+// 在 target 的 $mobx 属性上挂载 target 对应的 ObservableObjectAdministration
+// 返回这个 ObservableObjectAdministration
 export function asObservableObject(
     target: any,
     name: PropertyKey = "",
     defaultEnhancer: IEnhancer<any> = deepEnhancer
 ): ObservableObjectAdministration {
+    // 如果已经有 $mobx，返回
     if (Object.prototype.hasOwnProperty.call(target, $mobx)) return target[$mobx]
 
     process.env.NODE_ENV !== "production" &&
         invariant(
-            Object.isExtensible(target),
+            Object.isExtensible(target), // 如果 target 是不可扩展的，报错
             "Cannot make the designated object observable; it is not extensible"
         )
+
+    // 获取 name
     if (!isPlainObject(target))
         name = (target.constructor.name || "ObservableObject") + "@" + getNextId()
     if (!name) name = "ObservableObject@" + getNextId()
@@ -347,7 +360,9 @@ export function asObservableObject(
         stringifyKey(name),
         defaultEnhancer
     )
+    // 将 adm 挂载在 target 的 $mobx 属性上
     addHiddenProp(target, $mobx, adm)
+    // 返回 adm
     return adm
 }
 
@@ -371,7 +386,7 @@ export function generateObservablePropConfig(propName) {
 }
 
 function getAdministrationForComputedPropOwner(owner: any): ObservableObjectAdministration {
-    const adm = owner[$mobx]
+    const adm = owner[$mobx] // 获取 owner 的 observable object
     if (!adm) {
         // because computed props are declared on proty,
         // the current instance might not have been initialized yet
@@ -381,6 +396,7 @@ function getAdministrationForComputedPropOwner(owner: any): ObservableObjectAdmi
     return adm
 }
 
+// 直接从 target 取值会走到这里，也就是 target[name] 取值或者设置值
 export function generateComputedPropConfig(propName) {
     return (
         computedPropertyConfigs[propName] ||
@@ -406,6 +422,7 @@ export function isObservableObject(thing: any): thing is IObservableObject {
     if (isObject(thing)) {
         // Initializers run lazily when transpiling to babel, so make sure they are run...
         initializeInstance(thing)
+        // 判断 thing[$mobx] 是不是 ObservableObjectAdministration 的实例
         return isObservableObjectAdministration((thing as any)[$mobx])
     }
     return false

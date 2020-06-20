@@ -35,14 +35,18 @@ export function autorun(
     opts: IAutorunOptions = EMPTY_OBJECT
 ): IReactionDisposer {
     if (process.env.NODE_ENV !== "production") {
+        // 判断 view 是不是 function
         invariant(typeof view === "function", "Autorun expects a function as first argument")
         invariant(
+            // 判断 view 是不是 action，是 action 的话报错
             isAction(view) === false,
             "Autorun does not accept actions since actions are untrackable"
         )
     }
 
+    // 生成 name
     const name: string = (opts && opts.name) || (view as any).name || "Autorun@" + getNextId()
+    // 是否是 sync，没有有 scheduler 和 delay，表示是同步的
     const runSync = !opts.scheduler && !opts.delay
     let reaction: Reaction
 
@@ -77,6 +81,7 @@ export function autorun(
         )
     }
 
+    // 构建 react runner
     function reactionRunner() {
         view(reaction)
     }

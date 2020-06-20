@@ -28,6 +28,7 @@ export const computedDecorator = createPropDecorator(
     ) => {
         if (process.env.NODE_ENV !== "production") {
             invariant(
+                // 如果没有 get，报错
                 descriptor && descriptor.get,
                 `Trying to declare a computed value for unspecified getter '${stringifyKey(
                     propertyName
@@ -42,7 +43,7 @@ export const computedDecorator = createPropDecorator(
         asObservableObject(instance).addComputedProp(instance, propertyName, {
             get,
             set,
-            context: instance,
+            context: instance, // context 为 instance
             ...options
         })
     }

@@ -45,21 +45,31 @@ export const defaultCreateObservableOptions: CreateObservableOptions = {
 }
 Object.freeze(defaultCreateObservableOptions)
 
+// 有效属性包括：deep、name、equals、defaultDecorator、proxy
 function assertValidOption(key: string) {
-    if (!/^(deep|name|equals|defaultDecorator|proxy)$/.test(key))
+    if (!/^(deep|name|equals|defaultDecorator|proxy)$/.test(key)) {
         fail(`invalid option for (extend)observable: ${key}`)
+    }
 }
 
 export function asCreateObservableOptions(thing: any): CreateObservableOptions {
-    if (thing === null || thing === undefined) return defaultCreateObservableOptions
-    if (typeof thing === "string") return { name: thing, deep: true, proxy: true }
+    // thing 是 null 或 undefined，使用默认选项
+    if (thing === null || thing === undefined) {
+        return defaultCreateObservableOptions
+    }
+    // thing 是 string，作为 name
+    if (typeof thing === "string") {
+        return { name: thing, deep: true, proxy: true }
+    }
     if (process.env.NODE_ENV !== "production") {
+        // thing 不是 string，也不是 object，报错
         if (typeof thing !== "object") return fail("expected options object")
         Object.keys(thing).forEach(assertValidOption)
     }
     return thing as CreateObservableOptions
 }
 
+// 为 enhancer 创建 decorator
 export const deepDecorator = createDecoratorForEnhancer(deepEnhancer)
 const shallowDecorator = createDecoratorForEnhancer(shallowEnhancer)
 export const refDecorator = createDecoratorForEnhancer(referenceEnhancer)
@@ -88,19 +98,21 @@ function createObservable(v: any, arg2?: any, arg3?: any) {
 
     // something that can be converted and mutated?
     const res = isPlainObject(v)
-        ? observable.object(v, arg2, arg3)
+        ? observable.object(v, arg2, arg3) // 如果是 plain object，用 observable.object 转化
         : Array.isArray(v)
-        ? observable.array(v, arg2)
+        ? observable.array(v, arg2) // 如果是数组，用 observable.array 转化
         : isES6Map(v)
-        ? observable.map(v, arg2)
+        ? observable.map(v, arg2) // 如果是 Map，用 observable.map 转化
         : isES6Set(v)
-        ? observable.set(v, arg2)
+        ? observable.set(v, arg2) // 如果是 Set，用 observable.set 转化
         : v
 
     // this value could be converted to a new observable data structure, return it
+    // 如果转化为一个新的 observable 数据，转化成功，则返回
     if (res !== v) return res
 
     // otherwise, just box it
+    // 否则，转化失败
     fail(
         process.env.NODE_ENV !== "production" &&
             `The provided value could not be converted into an observable. If you want just create an observable reference to the object use 'observable.box(value)'`
@@ -182,15 +194,27 @@ const observableFactories: IObservableFactories = {
         decorators?: { [K in keyof T]: Function },
         options?: CreateObservableOptions
     ): T & IObservableObject {
+        // arguments[1] 是 string，表示被用作装饰器了
         if (typeof arguments[1] === "string") incorrectlyUsedAsDecorator("object")
         const o = asCreateObservableOptions(options)
+        // proxy 选项为 false
         if (o.proxy === false) {
             return extendObservable({}, props, decorators, o) as any
         } else {
+            // 获取默认 decorator
             const defaultDecorator = getDefaultDecoratorFromObjectOptions(o)
+            // 基于 {} 创建 base
+            // base 的 $mobx 属性为对应的 observableObjectAdministration
             const base = extendObservable({}, undefined, undefined, o) as any
+            // 基于 base 创建 dynamic observable object
+            // 创建 base 的 proxy，并挂载再 base $mobx 属性 的 proxy 属性上
             const proxy = createDynamicObservableObject(base)
+            // 使用 props 扩展 proxy
+            // 往 proxy 也就是 base 的 observableObjectAdministration 中添加对应的属性值
+            // observableObjectAdministration 的 values 属性是一个 Map，key 是 props 的各个属性，value是属性对应的 observableValue
+            // 这里也就是把 props的各个属性值转化为 observableValue 并添加到 values 的 Map 中
             extendObservableObjectWithProperties(proxy, props, decorators, defaultDecorator)
+            // 返回 proxy
             return proxy
         }
     },

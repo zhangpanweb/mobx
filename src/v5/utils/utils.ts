@@ -75,9 +75,13 @@ export function isObject(value: any): boolean {
     return value !== null && typeof value === "object"
 }
 
+// 判断 value 是否是 plain object
 export function isPlainObject(value) {
+    // 如果是 null 或者 type 不是 objcet，不是 plain objcet
     if (value === null || typeof value !== "object") return false
-    const proto = Object.getPrototypeOf(value)
+    const proto = Object.getPrototypeOf(value) // 获取 value 原型
+    // 如果 value 的原型 是 Object.prototype 或者是 null，表示是 plain object
+    // plain object 的原型 一定是 Object.prototype 或者 null
     return proto === Object.prototype || proto === null
 }
 
@@ -138,8 +142,9 @@ export function createInstanceofPredicate<T>(
     clazz: new (...args: any[]) => T
 ): (x: any) => x is T {
     const propName = "isMobX" + name
-    clazz.prototype[propName] = true
+    clazz.prototype[propName] = true // 将 propName 属性设置为 true
     return function(x) {
+        // 如果 x 是 clazz 的实例，则 x 的 propName 应该是 true
         return isObject(x) && x[propName] === true
     } as any
 }
@@ -164,10 +169,10 @@ export function isES6Set(thing): thing is Set<any> {
  */
 export function getPlainObjectKeys(object) {
     const enumerables = new Set<PropertyKey>()
-    for (let key in object) enumerables.add(key) // *all* enumerables
+    for (let key in object) enumerables.add(key) // *all* enumerables 所有可枚举属性
     Object.getOwnPropertySymbols(object).forEach(k => {
         if (Object.getOwnPropertyDescriptor(object, k)!.enumerable) enumerables.add(k)
-    }) // *own* symbols
+    }) // *own* symbols 所有的自有可枚举 symbols 属性
     // Note: this implementation is missing enumerable, inherited, symbolic property names! That would however pretty expensive to add,
     // as there is no efficient iterator that returns *all* properties
     return Array.from(enumerables)

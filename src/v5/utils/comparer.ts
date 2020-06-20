@@ -16,6 +16,7 @@ function shallowComparer(a: any, b: any): boolean {
     return deepEqual(a, b, 1)
 }
 
+// 默认的相等函数
 function defaultComparer(a: any, b: any): boolean {
     return Object.is(a, b)
 }
